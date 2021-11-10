@@ -138,61 +138,59 @@ def plot_roc_curve(fper, tper):
     plt.legend()
     plt.show()
 
-def main:
-  # Load the dataset (adult.csv)
-  df = pd.read_csv('adult.csv')
 
-  # ----------------------------------- Preprocessing -----------------------------------
-  # 1. Change the ? value to NaN
-  df = df.replace('?', np.NaN)
+# Load the dataset (adult.csv)
+df = pd.read_csv('adult.csv')
 
-  # 2. Drop the NaN values (row)
-  df = df.dropna(axis=0)
+# ----------------------------------- Preprocessing -----------------------------------
+# 1. Change the ? value to NaN
+df = df.replace('?', np.NaN)
 
-  # 3. Drop columns (education, capital-gain, capital-loss)
-  df.drop(['education', 'capital-gain', 'capital-loss'], axis=1, inplace=True)
+# 2. Drop the NaN values (row)
+df = df.dropna(axis=0)
 
-  # 4. Change "native-contry" values to binary value
-  # "United-States" : 1, not "United-States" : 0
-  df["native-country"]=df["native-country"].apply(nativeCountry)
+# 3. Drop columns (education, capital-gain, capital-loss)
+df.drop(['education', 'capital-gain', 'capital-loss'], axis=1, inplace=True)
 
-  # 5. Change "income" values to binary value
-  # <=50k : 2, >50k :1
-  df["income"]=df["income"].apply(income)
+# 4. Change "native-contry" values to binary value
+# "United-States" : 1, not "United-States" : 0
+df["native-country"]=df["native-country"].apply(nativeCountry)
 
-  # 6. Change educational number to three sector
-  # <10 : 1, 10~13 : 2, >13 :3
-  df["educational-num"]=df["educational-num"].mask(df["educational-num"] < 10, 1)
-  df["educational-num"]=df["educational-num"].mask(df["educational-num"] == 10, 2)
-  df["educational-num"]=df["educational-num"].mask(df["educational-num"] == 11, 2)
-  df["educational-num"]=df["educational-num"].mask(df["educational-num"] == 12, 2)
-  df["educational-num"]=df["educational-num"].mask(df["educational-num"] == 13, 2)
-  df["educational-num"]=df["educational-num"].mask(df["educational-num"] > 13, 3)
+# 5. Change "income" values to binary value
+# <=50k : 2, >50k :1
+df["income"]=df["income"].apply(income)
 
-  pd.set_option('display.max_columns', None)
-  print(df)
+# 6. Change educational number to three sector
+# <10 : 1, 10~13 : 2, >13 :3
+df["educational-num"]=df["educational-num"].mask(df["educational-num"] < 10, 1)
+df["educational-num"]=df["educational-num"].mask(df["educational-num"] == 10, 2)
+df["educational-num"]=df["educational-num"].mask(df["educational-num"] == 11, 2)
+df["educational-num"]=df["educational-num"].mask(df["educational-num"] == 12, 2)
+df["educational-num"]=df["educational-num"].mask(df["educational-num"] == 13, 2)
+df["educational-num"]=df["educational-num"].mask(df["educational-num"] > 13, 3)
+
+pd.set_option('display.max_columns', None)
+print(df)
 
 
-  scaled_col=["age","fnlwgt","educational-num","hours-per-week","native-country","income"]
-  encoded_col=["workclass","marital-status","occupation","relationship","race","gender"]
-  preprocessing_list=encodingNscalingData(df, scaled_col, encoded_col)
-  print(preprocessing_list)
+scaled_col=["age","fnlwgt","educational-num","hours-per-week","native-country","income"]
+encoded_col=["workclass","marital-status","occupation","relationship","race","gender"]
+preprocessing_list=encodingNscalingData(df, scaled_col, encoded_col)
+print(preprocessing_list)
 
-  # print(findBestClassificationModel(preprocessing_list,"income"))
+# print(findBestClassificationModel(preprocessing_list,"income"))
 
-  model, (test_x, test_y) = findBestClassificationModel(preprocessing_list,"income")
-  confusionMatrix(model, test_x, test_y)
+model, (test_x, test_y) = findBestClassificationModel(preprocessing_list,"income")
+confusionMatrix(model, test_x, test_y)
 
-  # visualize ROC curve
-  prob = model.predict_proba(test_x)
-  prob = prob[:, 1]
-  fper, tper, thresholds = roc_curve(test_y, prob)
-  plot_roc_curve(fper, tper)
+# visualize ROC curve
+prob = model.predict_proba(test_x)
+prob = prob[:, 1]
+fper, tper, thresholds = roc_curve(test_y, prob)
+plot_roc_curve(fper, tper)
 
-  # visualize confusion matrix
-  label = ['0', '1']
-  plot = plot_confusion_matrix(model, test_x, test_y, display_labels=label, cmap=plt.cm.Blues, normalize=None)
-  plot.ax_.set_title('Confusion Matrix')
- 
-if __name__ == "__main__":
-    main()
+# visualize confusion matrix
+label = ['0', '1']
+plot = plot_confusion_matrix(model, test_x, test_y, display_labels=label, cmap=plt.cm.Blues, normalize=None)
+plot.ax_.set_title('Confusion Matrix')
+
